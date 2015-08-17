@@ -9,6 +9,8 @@ G.Entity = function(){
     
     this.dx = 0;
     this.dy = 0;
+    
+    this.radius = 0;
 };
 
 G.Entity.prototype.setCoords = function(x,y) {
@@ -65,7 +67,7 @@ G.Entity.prototype.update = function() {
         this.dy = 0;
         this.yr = 0.4;
     }
-    if( this.hasCollision(this.cx, this.cy+1) && this.yr<=0.7 ) { // ditto below
+    if( this.hasCollision(this.cx, this.cy+1) && this.yr>=0.5 ) { // ditto below
         this.dy = 0;
         this.yr = 0.5;
     }

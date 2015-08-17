@@ -23,7 +23,7 @@ G.loop = function() {
     G.ctx.clearRect(0, 0, 800, 600);
     G.player.inputUpdate();
     G.player.update();
-    console.log(G.player.xx + ' ' + G.player.yy + ' ');
+    console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     G.player.draw(G.ctx);
 };
 
