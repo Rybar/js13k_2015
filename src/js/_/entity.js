@@ -25,8 +25,17 @@ G.Entity.prototype.setCoords = function(x,y) {
 G.Entity.prototype.hasCollision = function(cx,cy) {
         if(this.cx<0 || cx>=G.const.WIDTH || cy>=G.const.HEIGHT)
             return true;
-        else 
+        else
             return false;
+};
+
+G.Entity.prototype.overlaps = function(e) { //e is another entity
+    var maxDist = this.radius + e.radius;
+    var distSqr = (e.xx - this.xx)*(e.xx-this.xx) + (e.yy - this.yy)*(e.yy-this.yy);
+    if(distSqr <= maxDist*maxDist )
+        return true;
+    else
+        return false;
 };
     
 G.Entity.prototype.onGround = function() {
@@ -79,6 +88,25 @@ G.Entity.prototype.update = function() {
         this.cy++;
         this.yr--;
     }
+    
+    //object collision handling--------------------
+    G.ALL.forEach(function(e, i, a) {
+        console.log(a);
+        if(e != this && Math.abs(this.cx-e.cx) <= 2 && Math.abs(this.cy-e.cy) <= 2 ){
+            //Real distance check
+            var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
+            if(dist <= this.radius + e.radius) {
+                var ang = Math.atan2(e.yy-this.yy, e.xx-this.xx);
+                var force = 0.2;
+                var repelPower = (this.radius + e.radius - dist) / (this.radius + e.radius);
+                this.dx -= Math.cos(ang) * repelPower * force;
+                this.dy -= Math.sin(ang) * repelPower * force;
+                e.dx += Math.cos(ang) * repelPower * force;
+                e.dy += Math.sin(ang) * repelPower * force;
+            }
+        }
+    });
+    //----------------------------------------------
     
     this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);
     this.yy = Math.floor((this.cy + this.yr)*G.const.GRID);
