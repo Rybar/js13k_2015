@@ -11,6 +11,7 @@ G.Entity = function(){
     this.dy = 0;
     
     this.radius = 0;
+    this.gravity = 0;
 };
 
 G.Entity.prototype.setCoords = function(x,y) {
@@ -45,19 +46,19 @@ G.Entity.prototype.onGround = function() {
 G.Entity.prototype.update = function() {
     var frictX = 0.92;
     var frictY = 0.94;
-    var gravity = 0.01;
+    var gravity = this.gravity;
     
     
     //X component
     this.xr += this.dx;
     this.dx *= frictX;
-    if( this.hasCollision(this.cx-1, this.cy) && this.xr<=0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
+    if( this.hasCollision(this.cx-1, this.cy) && this.xr<=0.4 ) { // if there's something to the left AND we're near the left edge of the current cell
         this.dx = 0;
-        this.xr = 0.3;
+        this.xr = 0.4;
     }
-    if( this.hasCollision(this.cx+1, this.cy) && this.xr<=0.7 ) { // ditto right
+    if( this.hasCollision(this.cx+1, this.cy) && this.xr<=0.6 ) { // ditto right
         this.dx = 0;
-        this.xr = 0.7;
+        this.xr = 0.6;
     }
     while(this.xr < 0) { //update the cell and fractional movement
         this.cx--;
@@ -72,13 +73,13 @@ G.Entity.prototype.update = function() {
     this.dy += gravity;
     this.yr += this.dy;
     this.dy *= frictY;
-    if( this.hasCollision(this.cx, this.cy-1) && this.yr<=0.4 ) { // if there's something above...
+    if( this.hasCollision(this.cx, this.cy-1) && this.yr<=0.3 ) { // if there's something above...
         this.dy = 0;
-        this.yr = 0.4;
+        this.yr = 0.3;
     }
-    if( this.hasCollision(this.cx, this.cy+1) && this.yr>=0.5 ) { // ditto below
+    if( this.hasCollision(this.cx, this.cy+1) && this.yr>=0.7 ) { // ditto below
         this.dy = 0;
-        this.yr = 0.5;
+        this.yr = 0.7;
     }
     while(this.yr < 0) { //update the cell and fractional movement up
         this.cy--;
@@ -90,14 +91,19 @@ G.Entity.prototype.update = function() {
     }
     
     //object collision handling--------------------
-    G.ALL.forEach(function(e, i, a) {
-        console.log(a);
-        if(e != this && Math.abs(this.cx-e.cx) <= 2 && Math.abs(this.cy-e.cy) <= 2 ){
-            //Real distance check
+    
+    //console.log('all contains ' + G.ALL.length)
+    
+    for(var i = 0; i < G.ALL.length; i++) {
+        //console.log('in collision check loop');
+        var e = G.ALL[i];
+        if(e != this && Math.abs(this.cx-e.cx) <= 1 && Math.abs(this.cy-e.cy) <= 1 ){
+           // console.log('initial cell check...');
             var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
             if(dist <= this.radius + e.radius) {
+                //console.log('touching');
                 var ang = Math.atan2(e.yy-this.yy, e.xx-this.xx);
-                var force = 0.2;
+                var force = 0.07;
                 var repelPower = (this.radius + e.radius - dist) / (this.radius + e.radius);
                 this.dx -= Math.cos(ang) * repelPower * force;
                 this.dy -= Math.sin(ang) * repelPower * force;
@@ -105,7 +111,8 @@ G.Entity.prototype.update = function() {
                 e.dy += Math.sin(ang) * repelPower * force;
             }
         }
-    });
+       // else //console.log('no collision detected');
+    }
     //----------------------------------------------
     
     this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);

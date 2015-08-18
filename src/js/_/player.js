@@ -1,34 +1,41 @@
 G.player = new G.Entity();
-G.player.width = 16;
-G.player.height = 16;
-G.player.radius = 8;
+G.player.width = 32;
+G.player.height = 32;
+G.player.radius = 16;
 G.player.setCoords(400, 300);
 
 G.player.draw = function(ctx) {
     var p = G.player; 
+    
+    ctx.beginPath();
+    ctx.arc(this.xx, this.yy, this.radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = 'red';
-    ctx.fillRect(this.xx, this.yy, this.width, this.height);
+    ctx.fill();
 };
 
 G.player.moveLeft = function() {
-    console.log('moving left');
+    //console.log('moving left');
     this.dx -= G.const.P_SPEED;
 };
 
 G.player.moveRight = function() {
-     console.log('moving right');
+     //console.log('moving right');
     this.dx += G.const.P_SPEED;
 };
 
-G.player.jump = function() {
-    if(this.onGround() ){
-        console.log('jumping');
-        this.dy += -.5;
-    }
+G.player.moveUp = function() {
+        this.dy -= G.const.P_SPEED;
 };
+    
+G.player.moveDown = function() {
+        this.dy += G.const.P_SPEED;
+    };
+
 
 G.player.inputUpdate = function() {
-  if (G.Key.isDown(G.Key.UP)) this.jump();
+  if (G.Key.isDown(G.Key.UP)) this.moveUp();
+  if (G.Key.isDown(G.Key.DOWN)) this.moveDown();
   if (G.Key.isDown(G.Key.LEFT)) this.moveLeft();
   if (G.Key.isDown(G.Key.RIGHT)) this.moveRight();
+  
 };
