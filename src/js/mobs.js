@@ -1,12 +1,12 @@
 G.mobs=[];
 G.makeMobs = (function(){
-    for(var i = 0; i <= 10; i++){
+    for(var i = 0; i <= 300; i++){
     var mob = new G.Entity();
     mob.radius = 8;
     mob.width = 16;
     mob.height = 16;
     mob.gravity = 0.02;
-    mob.setCoords(Math.random()*750, Math.random()*550);
+    mob.setCoords((Math.random()*700)+32, Math.random()*100);
     G.mobs.push(mob);
     G.ALL.push(mob);
     }

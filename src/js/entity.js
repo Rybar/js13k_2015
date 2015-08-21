@@ -24,7 +24,7 @@ G.Entity.prototype.setCoords = function(x,y) {
     };
 
 G.Entity.prototype.hasCollision = function(cx,cy) {
-        if(this.cx<0 || cx>=G.const.WIDTH || cy>=G.const.HEIGHT)
+        if(this.cx<0 || cx>=G.const.WIDTH)
             return true;
         else if( (G.map[cy]) == undefined) {
             return false;
@@ -119,8 +119,14 @@ G.Entity.prototype.update = function() {
     }
     //----------------------------------------------
     
+    //vertical screen wrap:
+   
+  
+    
     this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);
     this.yy = Math.floor((this.cy + this.yr)*G.const.GRID);
+    
+    if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
     
 };
     

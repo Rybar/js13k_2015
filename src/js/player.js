@@ -25,9 +25,9 @@ G.player.moveRight = function() {
 };
 
 G.player.moveUp = function() {
-    if(this.onGround()){
+    //if(this.onGround()){
         this.dy = -G.const.P_JUMP;
-    }
+    //}
 };
     
 G.player.moveDown = function() {
@@ -42,5 +42,7 @@ G.player.inputUpdate = function() {
   if (G.Key.isDown(G.Key.DOWN)) this.moveDown();
   if (G.Key.isDown(G.Key.LEFT)) this.moveLeft();
   if (G.Key.isDown(G.Key.RIGHT)) this.moveRight();
+  
+  if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
   
 };

@@ -2,7 +2,7 @@ G.canvas = document.querySelector('#game');
 G.ctx = G.canvas.getContext('2d');
 
 G.ALL.push(G.player);
-G.ALL.push(G.enemy);
+//G.ALL.push(G.enemy);
 
 G.drawMap = function(ctx){
     for(var i = 0; i < G.map.length; i++){
@@ -22,7 +22,7 @@ G.loop = function() {
     G.ctx.fillRect(0, 0, 800, 600);
     G.player.inputUpdate();
     G.player.update();
-    G.enemy.update();
+   // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     G.drawMap(G.ctx);
     G.drawMobs(G.ctx);
