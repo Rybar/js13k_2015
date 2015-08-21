@@ -1,18 +1,20 @@
 G.canvas = document.querySelector('#game');
 G.ctx = G.canvas.getContext('2d');
-G.ALL = []; //to store all collidable entities in the game
-G.mobs = [];
-G.map = [];
-
-G.mapImage = new Image();
-G.mapImage.src = "maptest.png";
-
-
-
 
 G.ALL.push(G.player);
 G.ALL.push(G.enemy);
 
+G.drawMap = function(ctx){
+    for(var i = 0; i < G.map.length; i++){
+        for(var j = 0; j < G.map[i].length; j++){
+            if(G.map[i][j]){
+                ctx.fillStyle = 'gray';
+                ctx.fillRect(j*G.const.GRID, i*G.const.GRID, G.const.GRID, G.const.GRID);
+            }
+            
+        }
+    }
+}
 
 G.loop = function() {
     requestAnimationFrame(G.loop);
@@ -22,6 +24,7 @@ G.loop = function() {
     G.player.update();
     G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
+    G.drawMap(G.ctx);
     G.drawMobs(G.ctx);
     G.player.draw(G.ctx);
     G.enemy.draw(G.ctx);

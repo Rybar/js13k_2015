@@ -2,7 +2,8 @@ G.player = new G.Entity();
 G.player.width = 32;
 G.player.height = 32;
 G.player.radius = 16;
-G.player.setCoords(400, 300);
+G.player.gravity = G.const.P_GRAVITY;
+G.player.setCoords(400, 100);
 
 G.player.draw = function(ctx) {
     var p = G.player; 
@@ -24,7 +25,9 @@ G.player.moveRight = function() {
 };
 
 G.player.moveUp = function() {
-        this.dy -= G.const.P_SPEED;
+    if(this.onGround()){
+        this.dy = -G.const.P_JUMP;
+    }
 };
     
 G.player.moveDown = function() {
@@ -34,6 +37,8 @@ G.player.moveDown = function() {
 
 G.player.inputUpdate = function() {
   if (G.Key.isDown(G.Key.UP)) this.moveUp();
+  if (G.Key.isDown(G.Key.SPACE)) this.moveUp();
+  if (G.Key.isDown(G.Key.z)) this.moveUp();
   if (G.Key.isDown(G.Key.DOWN)) this.moveDown();
   if (G.Key.isDown(G.Key.LEFT)) this.moveLeft();
   if (G.Key.isDown(G.Key.RIGHT)) this.moveRight();

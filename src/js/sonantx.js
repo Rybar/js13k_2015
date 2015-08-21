@@ -29,6 +29,8 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 */
+
+    
 var sonantx;
 (function() {
 "use strict";
@@ -435,4 +437,5 @@ sonantx.MusicGenerator.prototype.createAudioBuffer = function(callBack) {
 };
 })();
 G.sonantx = sonantx;
+
 //---------END SONANT-X-----

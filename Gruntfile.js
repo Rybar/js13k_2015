@@ -19,7 +19,23 @@ module.exports = function(grunt) {
 					mangle: false,
 				},
 				files: {
-					'build/compiled.js': ['src/js/**/*.js']
+					'build/compiled.js': 
+					[
+						'src/js/const.js',
+						'src/js/util.js',
+						'src/js/sonantx.js',
+						'src/js/input.js',
+						'src/js/map.js',
+						'src/js/entity.js',
+						'src/js/player.js',
+						'src/js/mobs.js',
+						'src/js/enemy.js',
+						
+						'src/js/main.js',
+						
+						
+						
+						]
 				},
 			},
 			compressed: {
@@ -30,7 +46,12 @@ module.exports = function(grunt) {
 					}
 				},
 				files: {
-					'build/compiled.js': ['src/js/**/*.js']
+					'build/compiled.js':
+					[
+						'src/js/entity.js',
+						'src/js/**/!(main)*.js',
+						'src/js/main.js'
+						]
 				},
 			}
 		},
