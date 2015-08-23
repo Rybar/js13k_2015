@@ -14,8 +14,9 @@ G.buffer.webkitImageSmoothingEnabled = false;
 G.buffer.mozImageSmoothingEnabled = false; 
 G.buffer.imageSmoothingEnabled = false;
 
-var camera = new G.Camera(0,0, G.bufferCanvas.width, G.bufferCanvas.height, 1600,800);
+var camera = new G.Camera(0,0, G.bufferCanvas.width, G.bufferCanvas.height, G.const.WIDTH * G.const.GRID, G.const.HEIGHT * G.const.GRID);
 camera.follow(G.player, 100, 100);
+
 
 G.drawMap = function(ctx, xView, yView){
     for(var i = 0; i < G.map.length; i++){
@@ -28,7 +29,6 @@ G.drawMap = function(ctx, xView, yView){
         }
     }
 }
-
 G.drawBG = function(ctx, xView, yView){
     for(var i = 0; i < G.const.HEIGHT; i++){
         for(var j = 0; j < G.const.WIDTH; j++){
@@ -46,7 +46,6 @@ G.drawBG = function(ctx, xView, yView){
         }
     }
 };
-
 G.render = function(canvas){
     G.ctx.fillStyle = 'black';
     G.ctx.fillRect(0, 0, 1200, 864);
@@ -54,6 +53,15 @@ G.render = function(canvas){
     console.log(camera.xView + ", " + camera.yView);
     
 }
+
+G.map = G.initMap(G.const.WIDTH, G.const.HEIGHT);
+G.seedMap(G.map, 0.4);
+G.map = G.iterateMap(G.map, 4, 3);
+G.map = G.iterateMap(G.map, 4, 3);
+G.map = G.iterateMap(G.map, 4, 3);
+
+
+//G.map = G.iterateMap(G.map, 3, 4);
 
 G.loop = function() {
     

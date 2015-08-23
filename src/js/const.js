@@ -2,8 +2,8 @@ G.ALL = []; //to store all collidable entities in the game
 
 G.const={
     GRID: 16,
-    WIDTH: 50,
-    HEIGHT: 36,
+    WIDTH: 100,
+    HEIGHT: 100,
     
     P_SPEED: 0.03,
     P_FRICTX: 0.92,
