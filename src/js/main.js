@@ -1,7 +1,8 @@
 G.canvas = document.querySelector('#game');
 G.ctx = G.canvas.getContext('2d');
 G.ctx.webkitImageSmoothingEnabled = false;
-G.ctx.mozImageSmoothingEnabled = false; 
+G.ctx.mozImageSmoothingEnabled = false;
+G.ctx.imageSmoothingEnabled = false;
 
 G.ALL.push(G.player);
 //G.ALL.push(G.enemy);
@@ -11,31 +12,35 @@ G.bufferCanvas.height = 288;
 G.buffer = G.bufferCanvas.getContext('2d');
 G.buffer.webkitImageSmoothingEnabled = false;
 G.buffer.mozImageSmoothingEnabled = false; 
+G.buffer.imageSmoothingEnabled = false;
 
-G.drawMap = function(ctx){
+var camera = new G.Camera(0,0, G.bufferCanvas.width, G.bufferCanvas.height, 1600,800);
+camera.follow(G.player, 100, 100);
+
+G.drawMap = function(ctx, xView, yView){
     for(var i = 0; i < G.map.length; i++){
         for(var j = 0; j < G.map[i].length; j++){
             if(G.map[i][j]){
                 ctx.fillStyle = 'gray';
-                ctx.fillRect(j*G.const.GRID, i*G.const.GRID, G.const.GRID, G.const.GRID);
+                ctx.fillRect((j*G.const.GRID) - xView, (i*G.const.GRID) - yView, G.const.GRID, G.const.GRID);
             }
             
         }
     }
 }
 
-G.drawBG = function(ctx){
+G.drawBG = function(ctx, xView, yView){
     for(var i = 0; i < G.const.HEIGHT; i++){
         for(var j = 0; j < G.const.WIDTH; j++){
             if(j%2==0){
                 if(i%2==1){
                 ctx.fillStyle = '#080808';
-                ctx.fillRect(j*G.const.GRID, i*G.const.GRID, G.const.GRID, G.const.GRID);
+                ctx.fillRect((j*G.const.GRID) - xView, (i*G.const.GRID) - yView, G.const.GRID, G.const.GRID);
                 }
             }
             else if(i%2==0){
                  ctx.fillStyle = '#080808';
-                ctx.fillRect(j*G.const.GRID, i*G.const.GRID, G.const.GRID, G.const.GRID);
+                ctx.fillRect((j*G.const.GRID) - xView, (i*G.const.GRID) - yView, G.const.GRID, G.const.GRID);
             }
             
         }
@@ -43,25 +48,30 @@ G.drawBG = function(ctx){
 };
 
 G.render = function(canvas){
-    G.ctx.drawImage(canvas, 0,0, 400, 288, 0,0, 1200, 864);
+    G.ctx.fillStyle = 'black';
+    G.ctx.fillRect(0, 0, 1200, 864);
+    G.ctx.drawImage(canvas, 0, 0, 400, 288, 0,0, 1200, 864);
+    console.log(camera.xView + ", " + camera.yView);
     
 }
 
 G.loop = function() {
+    
     requestAnimationFrame(G.loop);
 
     G.player.inputUpdate();
     G.player.update();
+    camera.update();
    // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     
-    G.buffer.fillStyle = 'black';
-    G.buffer.fillRect(0, 0, 400, 288);
-    G.drawBG(G.buffer);
-    G.drawMap(G.buffer);
-    G.drawMobs(G.buffer);
-    G.player.draw(G.buffer);
-    G.enemy.draw(G.buffer);
+    G.buffer.fillStyle = 'black'; //screen blank
+    G.buffer.fillRect(0, 0, 1200, 864);
+    G.drawBG(G.buffer, camera.xView, camera.yView);
+    G.drawMap(G.buffer, camera.xView, camera.yView);
+    G.drawMobs(G.buffer, camera.xView, camera.yView);
+    G.player.draw(G.buffer, camera.xView, camera.yView);
+    G.enemy.draw(G.buffer, camera.xView, camera.yView);
     
     G.render(G.bufferCanvas);
     

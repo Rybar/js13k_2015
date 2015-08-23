@@ -5,11 +5,11 @@ G.player.radius = 8;
 G.player.gravity = G.const.P_GRAVITY;
 G.player.setCoords(200, 100);
 
-G.player.draw = function(ctx) {
+G.player.draw = function(ctx, xView, yView) {
     var p = G.player; 
     
     ctx.beginPath();
-    ctx.arc(this.xx, this.yy, this.radius, 0, 2 * Math.PI, false);
+    ctx.arc(this.xx - xView, this.yy - yView, this.radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = 'red';
     ctx.fill();
 };
