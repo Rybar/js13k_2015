@@ -1,9 +1,9 @@
 G.player = new G.Entity();
-G.player.width = 32;
-G.player.height = 32;
-G.player.radius = 16;
+G.player.width = 16;
+G.player.height = 16;
+G.player.radius = 8;
 G.player.gravity = G.const.P_GRAVITY;
-G.player.setCoords(400, 100);
+G.player.setCoords(200, 100);
 
 G.player.draw = function(ctx) {
     var p = G.player; 

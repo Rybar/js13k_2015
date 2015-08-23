@@ -2,9 +2,9 @@ G.mobs=[];
 G.makeMobs = (function(){
     for(var i = 0; i <= 300; i++){
     var mob = new G.Entity();
-    mob.radius = 8;
-    mob.width = 16;
-    mob.height = 16;
+    mob.radius = 4;
+    mob.width = 8;
+    mob.height = 8;
     mob.gravity = 0.02;
     mob.setCoords((Math.random()*700)+32, Math.random()*100);
     G.mobs.push(mob);
