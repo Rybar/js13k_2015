@@ -19,9 +19,9 @@ camera.follow(G.player, 100, 100);
 
 
 G.drawMap = function(ctx, xView, yView){
-    for(var i = 0; i < G.map.length; i++){
-        for(var j = 0; j < G.map[i].length; j++){
-            if(G.map[i][j]){
+    for(var i = 0; i < G.Map.length; i++){
+        for(var j = 0; j < G.Map[i].length; j++){
+            if(G.Map[i][j]){
                 ctx.fillStyle = 'gray';
                 ctx.fillRect((j*G.const.GRID) - xView, (i*G.const.GRID) - yView, G.const.GRID, G.const.GRID);
             }
@@ -54,25 +54,35 @@ G.render = function(canvas){
     
 }
 
-G.map = G.initMap(G.const.WIDTH, G.const.HEIGHT);
-G.seedMap(G.map, 0.4);
-G.map = G.iterateMap(G.map, 4, 3);
-G.map = G.iterateMap(G.map, 4, 3);
-G.map = G.iterateMap(G.map, 4, 3);
+G.Map = G.initMap(G.const.WIDTH, G.const.HEIGHT);
+G.seedMap(G.Map, 0.4);
+G.Map = G.iterateMap(G.Map, 4, 3);
+G.Map = G.iterateMap(G.Map, 4, 3);
+G.Map = G.iterateMap(G.Map, 4, 3);
+G.Map = G.iterateMap(G.Map, 4, 3);
+G.Map = G.iterateMap(G.Map, 4, 3);
 
+G.player.map = G.Map.map(function(arr) {
+    return arr.slice();
+});
 
-//G.map = G.iterateMap(G.map, 3, 4);
+//G.player.map = dupemap;
+
 
 G.loop = function() {
     
     requestAnimationFrame(G.loop);
 
+//----------------UPDATE-------------------
     G.player.inputUpdate();
     G.player.update();
     camera.update();
+    G.Key.update();
    // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
-    
+//--------------END UPDATE-----------------
+
+//--------------RENDER---------------------    
     G.buffer.fillStyle = 'black'; //screen blank
     G.buffer.fillRect(0, 0, 1200, 864);
     G.drawBG(G.buffer, camera.xView, camera.yView);
@@ -81,7 +91,7 @@ G.loop = function() {
     G.player.draw(G.buffer, camera.xView, camera.yView);
     G.enemy.draw(G.buffer, camera.xView, camera.yView);
     
-    G.render(G.bufferCanvas);
+    G.render(G.bufferCanvas); //draw buffer to full-size with scaling
     
 };
 

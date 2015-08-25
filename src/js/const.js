@@ -9,6 +9,6 @@ G.const={
     P_FRICTX: 0.92,
     P_FRICTY: 0.94,
     P_GRAVITY: 0.02,
-    P_JUMP: 0.5
+    P_JUMP: 0.4
     
 };

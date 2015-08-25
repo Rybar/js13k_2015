@@ -1,16 +1,16 @@
 G.mobs=[];
-G.makeMobs = (function(){
-    for(var i = 0; i <= 200; i++){
-    var mob = new G.Entity();
-    mob.radius = 4;
-    mob.width = 8;
-    mob.height = 8;
-    mob.gravity = 0.00;
-    mob.setCoords((Math.random()*1200)+32, Math.random()*800);
-    G.mobs.push(mob);
-    G.ALL.push(mob);
-    }
-})();
+// G.makeMobs = (function(){
+//     for(var i = 0; i <= 200; i++){
+//     var mob = new G.Entity();
+//     mob.radius = 4;
+//     mob.width = 8;
+//     mob.height = 8;
+//     mob.gravity = 0.00;
+//     mob.setCoords((Math.random()*1200)+32, Math.random()*800);
+//     G.mobs.push(mob);
+//     G.ALL.push(mob);
+//     }
+// })();
 
 G.drawMobs = function(ctx, xView, yView){
     G.mobs.forEach(function(e){

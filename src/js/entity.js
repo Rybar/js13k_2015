@@ -24,7 +24,17 @@ G.Entity.prototype.setCoords = function(x,y) {
     };
 
 G.Entity.prototype.hasCollision = function(cx,cy) {
-        if(this.cx<0 || cx>=G.const.WIDTH)
+    if(this == G.player){
+        if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
+            return true;
+        else if( (G.player.map[cy]) == undefined) {
+            return false;
+        }
+        else return (G.player.map[cy][cx]);
+        
+    }
+    
+        if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
             return true;
         else if( (G.map[cy]) == undefined) {
             return false;
@@ -44,6 +54,10 @@ G.Entity.prototype.overlaps = function(e) { //e is another entity
 G.Entity.prototype.onGround = function() {
     return this.hasCollision(this.cx, this.cy+1) && this.yr>=0.5;
 };
+
+G.Entity.prototype.onCeiling = function() {
+    return this.hasCollision(this.cx, this.cy-1) && this.yr<=0.5;
+};
     
 G.Entity.prototype.update = function() {
     var frictX = 0.92;
@@ -56,13 +70,13 @@ G.Entity.prototype.update = function() {
     this.dx *= frictX;
     if( this.hasCollision(this.cx-1, this.cy) && this.xr <= 0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
         this.dx = 0;
-        this.xr = 0.9;
+        this.xr = 0.3;
 
         
     }
     if( this.hasCollision(this.cx+1, this.cy) && this.xr >= 0.7 ) { // ditto right
         this.dx = 0;
-        this.xr = 0.3;
+        this.xr = 0.7;
     }
     while(this.xr < 0) { //update the cell and fractional movement
         this.cx--;
