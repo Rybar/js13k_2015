@@ -51,6 +51,12 @@ G.player.moveRight = function() {
 
 G.player.moveUp = function() {
     //if(this.onGround()){
+        this.dy -= G.const.P_THRUST;
+    //}
+};
+
+G.player.jump = function() {
+    //if(this.onGround()){
         this.dy = -G.const.P_JUMP;
     //}
 };
@@ -62,28 +68,51 @@ G.player.moveDown = function() {
 
 G.player.inputUpdate = function() {
     
-  if (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.SPACE) || G.Key.isDown(G.Key.z)){
-       this.moveUp();
+  if (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w)){
+    if(!this.flipped){
+        this.moveUp();
+    }
   }
+  if(this.flipped && this.onGround() && (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w) ) ){
+        this.jump();
+    }
   
   //if (G.Key.isDown(G.Key.DOWN)) this.moveDown();
-  if (G.Key.isDown(G.Key.LEFT)) this.moveLeft();
-  if (G.Key.isDown(G.Key.RIGHT)) this.moveRight();
+  if (G.Key.isDown(G.Key.LEFT) || G.Key.isDown(G.Key.a)) this.moveLeft();
+  if (G.Key.isDown(G.Key.RIGHT) || G.Key.isDown(G.Key.d)) this.moveRight();
   
-//-------flip mechanic handling---------------
-  if (G.Key.justReleased(G.Key.x)){
+//------------------------------------------------------
+//            flip mechanic handling     
+//------------------------------------------------------
+  if (G.Key.justReleased(G.Key.SPACE)){
       if(this.onGround()){
-        G.flipMap(G.player.map); 
-        this.flipped = !this.flipped;
-        this.setCoords(this.xx, this.yy+G.const.GRID); // 'teleport' down 1 space
+          if(!this.flipped){ //point down can't flip through floor.
+              //play buzzer?
+          }
+          else{
+            G.flipMap(G.player.map); //red touching floor can flip.
+            this.flipped = !this.flipped;
+            this.setCoords(this.xx, this.yy+G.const.GRID); // 'teleport' down 1 space
+          }
       }
       else if(this.onCeiling()){ //if flying and touching ceiling...
-        G.flipMap(G.player.map); 
-        this.flipped = !this.flipped;
-        this.setCoords(this.xx, this.yy-G.const.GRID); // up
+      
+        if(this.flipped){ //pointed up can't flip through ceiling.
+           //play buzzer sound? 
+        }
+        else{ //we're purple and pointed down, flip it
+            G.flipMap(G.player.map); 
+            this.flipped = !this.flipped;
+            this.setCoords(this.xx, this.yy-G.const.GRID); // up
+            }
       }
-  } 
-  
+  }
+//------------------------------------------------------
+
+if (G.Key.justReleased(G.Key.s)){
+    G.cellFlip(this.cx, this.cy);
+}
+
   
 //vertical screen wrap  
   if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);

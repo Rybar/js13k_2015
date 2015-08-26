@@ -33,6 +33,28 @@ G.initMap = function(width, height) { //fill an array at dimensions with falsy v
     return map;
 };
 
+G.initPlayerSpace = function(map,cx,cy){
+    for(var i = -1; i < 2; i++){  //set up loops to check the 3x3 area around x,y
+        for(var j = -1; j < 2; j++){
+            console.log(map, cx, cy);
+            map[cy+j][cx+i] = 0;
+        }
+    }
+    
+};
+
+G.cellFlip = function(cx, cy){
+    if(G.Map[cy][cx+1] == 0){
+                G.Map[cy][cx+1] = 1;
+            }
+            else G.Map[cy][cx+1] = 0;
+            
+    if(G.player.map[cy][cx+1] == 0){
+                G.player.map[cy][cx+1] = 1;
+            }
+            else G.player.map[cy][cx+1] = 0;
+}
+
 G.countAliveNeighbors = function(map, x, y) {  
     var count = 0;
     for(var i = -1; i < 2; i++){  //set up loops to check the 3x3 area around x,y

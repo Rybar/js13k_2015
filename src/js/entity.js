@@ -33,13 +33,14 @@ G.Entity.prototype.hasCollision = function(cx,cy) {
         else return (G.player.map[cy][cx]);
         
     }
-    
+    else {
         if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
             return true;
-        else if( (G.map[cy]) == undefined) {
+        else if( (G.Map[cy]) == undefined) {
             return false;
         }
-        else return (G.map[cy][cx]);
+        else return (G.Map[cy][cx]);
+    }
 };
 
 G.Entity.prototype.overlaps = function(e) { //e is another entity
@@ -133,12 +134,15 @@ G.Entity.prototype.update = function() {
     }
     //----------------------------------------------
     
-    //vertical screen wrap:
+   
    
   
+    //update actual pixel coordinates:
     
     this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);
     this.yy = Math.floor((this.cy + this.yr)*G.const.GRID);
+    
+    //vertical screen wrap: 
     
     if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
     
