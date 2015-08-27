@@ -18,6 +18,7 @@ G.player.draw = function(ctx, xView, yView) {
         ctx.lineTo(this.xx+8-xView, this.yy+8-yView);
         ctx.lineTo(this.xx-xView, this.yy-8-yView);
         ctx.lineTo(this.xx-8-xView, this.yy+8-yView);
+        
         ctx.fill();
         
     }
@@ -25,10 +26,11 @@ G.player.draw = function(ctx, xView, yView) {
         
         ctx.beginPath();
         ctx.fillStyle = this.flipped ? 'red' : 'purple';
-        ctx.moveTo(this.xx-xView, this.yy+8-yView);
-        ctx.lineTo(this.xx-8-xView, this.yy-8-yView);
-        ctx.lineTo(this.xx+8-xView, this.yy-8-yView);
-        ctx.lineTo(this.xx-xView, this.yy+8-yView);
+        // ctx.moveTo(this.xx-xView, this.yy+8-yView);
+        // ctx.lineTo(this.xx-8-xView, this.yy-8-yView);
+        // ctx.lineTo(this.xx+8-xView, this.yy-8-yView);
+        // ctx.lineTo(this.xx-xView, this.yy+8-yView);
+        ctx.fillRect(this.xx-this.width/2-xView, this.yy-this.height/2-yView, this.width, this.height)
         ctx.fill();
         
     }
@@ -62,11 +64,13 @@ G.player.jump = function() {
 };
     
 G.player.moveDown = function() {
-        this.dy += G.const.P_SPEED;
+        this.dy += G.const.P_THRUST;
     };
 
 
 G.player.inputUpdate = function() {
+
+    this.gravity = this.flipped ? G.const.P_GRAVITY : 0;
     
   if (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w)){
     if(!this.flipped){
@@ -77,7 +81,7 @@ G.player.inputUpdate = function() {
         this.jump();
     }
   
-  //if (G.Key.isDown(G.Key.DOWN)) this.moveDown();
+  if (G.Key.isDown(G.Key.DOWN) && !this.flipped) this.moveDown();
   if (G.Key.isDown(G.Key.LEFT) || G.Key.isDown(G.Key.a)) this.moveLeft();
   if (G.Key.isDown(G.Key.RIGHT) || G.Key.isDown(G.Key.d)) this.moveRight();
   
@@ -116,5 +120,6 @@ if (G.Key.justReleased(G.Key.s)){
   
 //vertical screen wrap  
   if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
+  if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
   
 };

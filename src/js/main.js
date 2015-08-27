@@ -8,7 +8,7 @@ G.ALL.push(G.player);
 //G.ALL.push(G.enemy);
 G.bufferCanvas = document.createElement('canvas');
 G.bufferCanvas.width = 400;
-G.bufferCanvas.height = 288;
+G.bufferCanvas.height = 300;
 G.buffer = G.bufferCanvas.getContext('2d');
 G.buffer.webkitImageSmoothingEnabled = false;
 G.buffer.mozImageSmoothingEnabled = false;
@@ -21,7 +21,7 @@ camera.follow(G.player, 100, 100);
 
 //------------------------------------------------------------
 //TODO: optimize drawing for on-screen tiles only. 
-//TODO: finish perimeter drawing algorithm.
+//TODO: tweak player flying movement
 //------------------------------------------------------------
 G.drawMap = function(ctx, xView, yView) {
     for (var i = 0; i < G.Map.length; i++) {
@@ -92,7 +92,7 @@ G.drawBG = function(ctx, xView, yView) {
 G.render = function(canvas) {
     G.ctx.fillStyle = 'black';
     G.ctx.fillRect(0, 0, 1200, 864);
-    G.ctx.drawImage(canvas, 0, 0, 400, 288, 0, 0, 1200, 864);
+    G.ctx.drawImage(canvas, 0, 0, 400, 300, 0, 0, 800, 600);
     console.log(camera.xView + ", " + camera.yView);
 
 }
