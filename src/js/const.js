@@ -1,9 +1,10 @@
+var G = window.G || {}; 
 G.ALL = []; //to store all collidable entities in the game
 
 G.const={
     GRID: 16,
-    WIDTH: 50,
-    HEIGHT: 50,
+    WIDTH: 100,
+    HEIGHT: 100,
     
     P_SPEED: 0.03,
     P_SPACESPEED: 0.01,

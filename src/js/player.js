@@ -48,7 +48,7 @@ G.player.moveLeft = function() {
     }
     else{
         this.dx -= G.const.P_THRUST;
-        G.playSound(G.sounds.jet);
+        G.jetloop.volume.gain.value = 1;
     } 
 };
 
@@ -59,14 +59,14 @@ G.player.moveRight = function() {
     }
     else{
         this.dx += G.const.P_THRUST;
-        G.playSound(G.sounds.jet);
+        G.jetloop.volume.gain.value = 1;
     } 
 };
 
 G.player.moveUp = function() {
     //if(this.onGround()){
         this.dy -= G.const.P_THRUST;
-        G.playSound(G.sounds.jet);
+        G.jetloop.volume.gain.value = 1;
     //}
 };
 
@@ -79,6 +79,7 @@ G.player.jump = function() {
     
 G.player.moveDown = function() {
         this.dy += G.const.P_THRUST;
+        G.jetloop.volume.gain.value = 1;
     };
 G.player.flip = function () {
     if(this.onGround()){
@@ -137,8 +138,15 @@ G.player.inputUpdate = function() {
 // }
 
   
-//vertical screen wrap  
+//vertidcal screen wrap  
   //if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
   //if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
+ if (G.Key.justReleased(G.Key.a) || G.Key.justReleased(G.Key.LEFT)
+ || G.Key.justReleased(G.Key.w) || G.Key.justReleased(G.Key.UP)
+|| G.Key.justReleased(G.Key.d) || G.Key.justReleased(G.Key.RIGHT)
+|| G.Key.justReleased(G.Key.s) || G.Key.justReleased(G.Key.DOWN))
+ G.jetloop.volume.gain.value = 0.0;
+
+ ; //turn jet noise off if no keypresses
   
 };
