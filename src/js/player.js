@@ -43,22 +43,36 @@ G.player.draw = function(ctx, xView, yView) {
 
 G.player.moveLeft = function() {
     //console.log('moving left');
-    this.dx -= G.const.P_SPEED;
+     if(this.flipped){
+        this.dx -= G.const.P_SPEED;
+    }
+    else{
+        this.dx -= G.const.P_THRUST;
+        G.playSound(G.sounds.jet);
+    } 
 };
 
 G.player.moveRight = function() {
      //console.log('moving right');
-    this.dx += G.const.P_SPEED;
+    if(this.flipped){
+        this.dx += G.const.P_SPEED;
+    }
+    else{
+        this.dx += G.const.P_THRUST;
+        G.playSound(G.sounds.jet);
+    } 
 };
 
 G.player.moveUp = function() {
     //if(this.onGround()){
         this.dy -= G.const.P_THRUST;
+        G.playSound(G.sounds.jet);
     //}
 };
 
 G.player.jump = function() {
     //if(this.onGround()){
+        G.playSound(G.sounds.jump);
         this.dy = -G.const.P_JUMP;
     //}
 };
@@ -66,30 +80,8 @@ G.player.jump = function() {
 G.player.moveDown = function() {
         this.dy += G.const.P_THRUST;
     };
-
-
-G.player.inputUpdate = function() {
-
-    this.gravity = this.flipped ? G.const.P_GRAVITY : 0;
-    
-  if (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w)){
-    if(!this.flipped){
-        this.moveUp();
-    }
-  }
-  if(this.flipped && this.onGround() && (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w) ) ){
-        this.jump();
-    }
-  
-  if (G.Key.isDown(G.Key.DOWN) && !this.flipped) this.moveDown();
-  if (G.Key.isDown(G.Key.LEFT) || G.Key.isDown(G.Key.a)) this.moveLeft();
-  if (G.Key.isDown(G.Key.RIGHT) || G.Key.isDown(G.Key.d)) this.moveRight();
-  
-//------------------------------------------------------
-//            flip mechanic handling     
-//------------------------------------------------------
-  if (G.Key.justReleased(G.Key.SPACE)){
-      if(this.onGround()){
+G.player.flip = function () {
+    if(this.onGround()){
           if(!this.flipped){ //point down can't flip through floor.
               //play buzzer?
           }
@@ -97,6 +89,7 @@ G.player.inputUpdate = function() {
             G.flipMap(G.player.map); //red touching floor can flip.
             this.flipped = !this.flipped;
             this.setCoords(this.xx, this.yy+G.const.GRID); // 'teleport' down 1 space
+            G.playSound(G.sounds.flip);
           }
       }
       else if(this.onCeiling()){ //if flying and touching ceiling...
@@ -108,18 +101,44 @@ G.player.inputUpdate = function() {
             G.flipMap(G.player.map); 
             this.flipped = !this.flipped;
             this.setCoords(this.xx, this.yy-G.const.GRID); // up
+            G.playSound(G.sounds.flip);
             }
       }
+};
+
+
+G.player.inputUpdate = function() {
+
+    this.gravity = this.flipped ? G.const.P_GRAVITY : 0;
+    this.frictY = this.flipped ? G.const.P_FRICTY : G.const.P_SPACEFRICT;
+    this.frictX = this.flipped ? G.const.P_FRICTX : G.const.P_SPACEFRICT;
+    
+  if (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w)){
+    if(!this.flipped){
+        this.moveUp();
+    }
   }
+  if(this.flipped && this.onGround() && (G.Key.isDown(G.Key.UP) || G.Key.isDown(G.Key.w) ) ){
+        this.jump();
+    }
+  
+  if (G.Key.isDown(G.Key.DOWN) || G.Key.isDown(G.Key.s) && !this.flipped) this.moveDown();
+  if (G.Key.isDown(G.Key.LEFT) || G.Key.isDown(G.Key.a)) this.moveLeft();
+  if (G.Key.isDown(G.Key.RIGHT) || G.Key.isDown(G.Key.d)) this.moveRight();
+  
+//------------------------------------------------------
+//            flip mechanic handling     
+//------------------------------------------------------
+  if (G.Key.justReleased(G.Key.SPACE)) this.flip();
 //------------------------------------------------------
 
-if (G.Key.justReleased(G.Key.s)){
-    G.cellFlip(this.cx, this.cy);
-}
+// if (G.Key.justReleased(G.Key.s)){
+//     G.cellFlip(this.cx, this.cy);
+// }
 
   
 //vertical screen wrap  
-  if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
-  if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
+  //if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
+  //if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
   
 };

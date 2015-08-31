@@ -12,6 +12,9 @@ G.Entity = function(){
     
     this.radius = 0;
     this.gravity = 0;
+    
+    this.frictX = 0.92;
+    this.frictY = 0.94;
 };
 
 G.Entity.prototype.setCoords = function(x,y) {
@@ -28,7 +31,7 @@ G.Entity.prototype.hasCollision = function(cx,cy) {
         if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
             return true;
         else if( (G.player.map[cy]) == undefined) {
-            return false;
+            return true;
         }
         else return (G.player.map[cy][cx]);
         
@@ -61,14 +64,13 @@ G.Entity.prototype.onCeiling = function() {
 };
     
 G.Entity.prototype.update = function() {
-    var frictX = 0.92;
-    var frictY = 0.94;
+    
     var gravity = this.gravity;
      
     
     //X component
     this.xr += this.dx;
-    this.dx *= frictX;
+    this.dx *= this.frictX;
     if( this.hasCollision(this.cx-1, this.cy) && this.xr <= 0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
         this.dx = 0;
         this.xr = 0.3;
@@ -91,7 +93,7 @@ G.Entity.prototype.update = function() {
     //Y component
     this.dy += gravity;
     this.yr += this.dy;
-    this.dy *= frictY;
+    this.dy *= this.frictY;
     if( this.hasCollision(this.cx, this.cy-1) && this.yr <= 0.4 ) { // if there's something above...
         this.dy = 0;
         this.yr = 0.4;
@@ -111,7 +113,7 @@ G.Entity.prototype.update = function() {
     
     //object collision handling--------------------
     
-    //console.log('all contains ' + G.ALL.length)
+    //sa('all contains ' + G.ALL.length)
     
     for(var i = 0; i < G.ALL.length; i++) {
         //console.log('in collision check loop');

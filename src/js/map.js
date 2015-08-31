@@ -36,7 +36,6 @@ G.initMap = function(width, height) { //fill an array at dimensions with falsy v
 G.initPlayerSpace = function(map,cx,cy){
     for(var i = -1; i < 2; i++){  //set up loops to check the 3x3 area around x,y
         for(var j = -1; j < 2; j++){
-            console.log(map, cx, cy);
             map[cy+j][cx+i] = 0;
         }
     }
@@ -53,7 +52,7 @@ G.cellFlip = function(cx, cy){
                 G.player.map[cy][cx+1] = 1;
             }
             else G.player.map[cy][cx+1] = 0;
-}
+};
 
 G.countAliveNeighbors = function(map, x, y) {  
     var count = 0;
@@ -99,6 +98,59 @@ G.iterateMap = function(oldMap, birthLimit, deathLimit) {
             
     }
     return newMap;
+};
+
+//------------------------------------------------------------
+//TODO: optimize drawing for on-screen tiles only. 
+//TODO: tweak player flying movement
+//------------------------------------------------------------
+G.drawMap = function(ctx, xView, yView) {
+    for (var i = 0; i < G.Map.length; i++) {
+        for (var j = 0; j < G.Map[i].length; j++) { 
+            if (G.Map[i][j]) {
+                //ctx.lineWidth = 0.5;
+                ctx.strokeStyle = '#202020';
+                ctx.strokeRect((j * G.const.GRID) - xView, (i * G.const.GRID) - yView, G.const.GRID, G.const.GRID);
+                
+                if(i > 0 && i < G.Map.length-1){ 
+                    if (G.Map[i - 1][j] == 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = G.player.flipped ? 'purple' : 'red';
+                    ctx.moveTo(j * G.const.GRID - xView, i * G.const.GRID - yView);
+                    ctx.lineTo(j * G.const.GRID - xView + G.const.GRID, (i * G.const.GRID - yView));
+                    ctx.stroke();
+                    }
+                    
+                    if (G.Map[i + 1][j] == 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = G.player.flipped ? 'red' : 'purple';
+                    ctx.moveTo(j * G.const.GRID - xView, i * G.const.GRID - yView+G.const.GRID);
+                    ctx.lineTo(j * G.const.GRID - xView + G.const.GRID, (i * G.const.GRID - yView+G.const.GRID));
+                    ctx.stroke();
+                    }
+                }
+                
+                if(j > 0 && j < G.Map[i].length-1){ 
+                    if (G.Map[i][j-1] == 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'gray';
+                    ctx.moveTo(j * G.const.GRID - xView, i * G.const.GRID - yView);
+                    ctx.lineTo(j * G.const.GRID - xView, i * G.const.GRID - yView+G.const.GRID);
+                    ctx.stroke();
+                    }
+                    
+                    if (G.Map[i][j+1] == 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'gray';
+                    ctx.moveTo(j * G.const.GRID - xView+G.const.GRID, i * G.const.GRID - yView);
+                    ctx.lineTo(j * G.const.GRID - xView+G.const.GRID, i * G.const.GRID - yView+G.const.GRID);
+                    ctx.stroke();
+                    }
+                }
+                
+            }
+        }
+    }
 };
 
     
