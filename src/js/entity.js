@@ -74,8 +74,6 @@ G.Entity.prototype.update = function() {
     if( this.hasCollision(this.cx-1, this.cy) && this.xr <= 0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
         this.dx = 0;
         this.xr = 0.3;
-
-        
     }
     if( this.hasCollision(this.cx+1, this.cy) && this.xr >= 0.7 ) { // ditto right
         this.dx = 0;

@@ -10,7 +10,7 @@ G.seedMap = function(map, chance) { //fill map with random values
     return map;
 };
 
-G.flipMap = function(map) { //fill map with random values
+G.flipMap = function(map) { 
     for(var i = 0; i < map.length; i++){
         for(var j = 0; j < map[0].length; j++){
             if(map[i][j] == 0){
@@ -102,11 +102,11 @@ G.iterateMap = function(oldMap, birthLimit, deathLimit) {
 
 //------------------------------------------------------------
 //TODO: optimize drawing for on-screen tiles only. 
-//TODO: tweak player flying movement
 //------------------------------------------------------------
 G.drawMap = function(ctx, xView, yView) {
     for (var i = 0; i < G.Map.length; i++) {
         for (var j = 0; j < G.Map[i].length; j++) { 
+            //if(G.Map[i][j] < 0){G.Map[i][j] = 0} //hacky update bit to prevent negative cell health
             if (G.Map[i][j]) {
                 //ctx.lineWidth = 0.5;
                 ctx.strokeStyle = '#202020';

@@ -55,7 +55,7 @@ G.initAudio = function(){
     //----------------------------------------------
     G.sounds = {};
     G.sounds.loaded = 0;
-    G.sounds.total = 4;
+    G.sounds.total = 3;
     window.AudioContext = window.AudioContext||window.webkitAudioContext;
     G.audioCtx = new AudioContext;
 
@@ -80,11 +80,11 @@ G.initAudio = function(){
        
     });
     
-    G.soundGen = new G.sonantx.MusicGenerator(G.audio.GAMESONG);
-    G.soundGen.createAudioBuffer(function(buffer){
-        G.sounds.loaded++;
-        G.sounds.gameSong = buffer;
-    });
+    // G.soundGen = new G.sonantx.MusicGenerator(G.audio.GAMESONG);
+    // G.soundGen.createAudioBuffer(function(buffer){
+    //     G.sounds.loaded++;
+    //     G.sounds.gameSong = buffer;
+    // });
 
 };
 G.playSound = function(buffer, loop){
@@ -125,6 +125,31 @@ G.render = function(canvas) {
 
 }
 
+G.resizeGame = function() {
+    var gameArea = document.querySelector('#gamecontainer');
+    var widthToHeight = 16 / 9;
+    var newWidth = window.innerWidth;
+    var newHeight = window.innerHeight;
+    var newWidthToHeight = newWidth / newHeight;
+    
+    if (newWidthToHeight > widthToHeight) {
+        newWidth = newHeight * widthToHeight;
+        gameArea.style.height = newHeight + 'px';
+        gameArea.style.width = newWidth + 'px';
+    } else {
+        newHeight = newWidth / widthToHeight;
+        gameArea.style.width = newWidth + 'px';
+        gameArea.style.height = newHeight + 'px';
+    }
+    
+    gameArea.style.marginTop = (-newHeight / 2) + 'px';
+    gameArea.style.marginLeft = (-newWidth / 2) + 'px';
+    
+    var gameCanvas = document.querySelector('#game');
+    gameCanvas.width = newWidth;
+    gameCanvas.height = newHeight;
+}
+
 G.loadingScreen = function(){
      if(G.sounds.loaded != G.sounds.total && G.sounds.gameSong == null){
         requestAnimationFrame(G.loadingScreen);
@@ -135,7 +160,7 @@ G.loadingScreen = function(){
         G.ctx.fillText("Loading... "+G.sounds.loaded, 10, 50);
     }
     else{
-         G.playSound(G.sounds.gameSong, true);
+         //G.playSound(G.sounds.gameSong, true);
          G.jetloop = G.playSound(G.sounds.jet, true);
          G.jetloop.sound.loopEnd = 0.3;
          G.jetloop.volume.gain.value = 0;
@@ -150,12 +175,14 @@ G.loop = function() {
     requestAnimationFrame(G.loop);
 
     //----------------UPDATE-------------------
-    G.player.inputUpdate();
+    G.mobUpdate();
     G.Map = G.Map;
     G.player.map = G.player.map;
+    G.player.inputUpdate();
     G.player.update();
     G.camera.update();
     G.Key.update();
+    
     // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     //--------------END UPDATE-----------------
@@ -168,11 +195,18 @@ G.loop = function() {
     G.drawMap(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMobs(G.buffer, G.camera.xView, G.camera.yView);
     G.player.draw(G.buffer, G.camera.xView, G.camera.yView);
-    G.enemy.draw(G.buffer, G.camera.xView, G.camera.yView);
+    //G.enemy.draw(G.buffer, G.camera.xView, G.camera.yView);
 
     G.render(G.bufferCanvas); //draw buffer to full-size with scaling
+    
+    
 
 };
+
+setInterval(function(){
+        G.const.E_HUNGER-=5;
+        console.log(G.const.E_HUNGER);
+    },1000);
 
 window.addEventListener('keyup', function(event) {
     G.Key.onKeyup(event);
@@ -180,5 +214,6 @@ window.addEventListener('keyup', function(event) {
 window.addEventListener('keydown', function(event) {
     G.Key.onKeydown(event);
 }, false);
+//window.addEventListener('resize', G.resizeGame());
 
 window.onload = G.init;

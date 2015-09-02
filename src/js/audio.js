@@ -1130,3 +1130,5 @@ G.audio = {
 }
 
 };
+
+//thoughts: look into how to 'muffle' sound with a audio node. Can alter music playback depending on map space
