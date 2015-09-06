@@ -1,9 +1,9 @@
 G.player = new G.Entity();
-G.player.width = 16;
-G.player.height = 16;
+G.player.width = G.const.P_SIZE;
+G.player.height = G.const.P_SIZE;
 G.player.radius = 8;
 G.player.gravity = G.const.P_GRAVITY;
-G.player.setCoords(200, 100);
+G.player.setCoords(400, 300);
 G.player.flipped = false;
 G.player.map=[];
 
@@ -137,10 +137,12 @@ G.player.inputUpdate = function() {
 //     G.cellFlip(this.cx, this.cy);
 // }
 
+
+
   
 //vertidcal screen wrap  
-  //if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
-  //if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
+//if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
+//if(this.yy < 0 + this.radius) this.setCoords(this.xx, G.const.GRID * G.const.HEIGHT);
  if (G.Key.justReleased(G.Key.a) || G.Key.justReleased(G.Key.LEFT)
  || G.Key.justReleased(G.Key.w) || G.Key.justReleased(G.Key.UP)
 || G.Key.justReleased(G.Key.d) || G.Key.justReleased(G.Key.RIGHT)

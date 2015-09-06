@@ -23,6 +23,7 @@ module.exports = function(grunt) {
 					[
 						'src/js/const.js',
 						'src/js/util.js',
+						'src/js/stats.js',
 						//'src/js/playground.js',
 						'src/js/sonantx.js',
 						'src/js/input.js',
@@ -60,6 +61,7 @@ module.exports = function(grunt) {
 						[
 						'src/js/const.js',
 						'src/js/util.js',
+						'src/js/stats.js',
 						//'src/js/playground.js',
 						'src/js/sonantx.js',
 						'src/js/input.js',

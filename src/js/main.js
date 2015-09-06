@@ -1,4 +1,13 @@
 var G = window.G || {};
+G.stats = new Stats();
+G.stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
+
+// align top-left
+G.stats.domElement.style.position = 'absolute';
+G.stats.domElement.style.left = '0px';
+G.stats.domElement.style.top = '0px';
+    document.body.appendChild( G.stats.domElement );
+
 G.canvas = document.querySelector('#game');
 G.ctx = G.canvas.getContext('2d');
 G.ctx.webkitImageSmoothingEnabled = false;
@@ -8,6 +17,7 @@ G.ctx.imageSmoothingEnabled = false;
 G.init = function(){
     
     G.ALL.push(G.player);  //push player to ALL for collisions
+    G.paused = false;
     //G.ALL.push(G.enemy);
     G.bufferCanvas = document.createElement('canvas');
     G.bufferCanvas.width = 800;
@@ -121,6 +131,7 @@ G.render = function(canvas) {
     G.ctx.fillStyle = 'black';
     G.ctx.fillRect(0, 0, 1200, 864);
     G.ctx.drawImage(canvas, 0, 0, 800, 600, 0, 0, 800, 600);
+
     //console.log(G.camera.xView + ", " + G.camera.yView);
 
 }
@@ -171,27 +182,34 @@ G.loadingScreen = function(){
 };
 
 G.loop = function() {
-
-    requestAnimationFrame(G.loop);
-
+    
+    G.stats.begin();
+    
+    if(!G.paused){
+        
     //----------------UPDATE-------------------
     G.mobUpdate();
     G.Map = G.Map;
     G.player.map = G.player.map;
+    
     G.player.inputUpdate();
     G.player.update();
-    G.camera.update();
-    G.Key.update();
-    
+    G.camera.update();        
     // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     //--------------END UPDATE-----------------
+        
+    }
+
+    
+
+   
 
     //--------------RENDER---------------------
     
-    G.buffer.fillStyle = 'black'; //screen blank
+    G.buffer.fillStyle = 'rgba(0,0,0,.5)'; //screen blank
     G.buffer.fillRect(0, 0, 800, 600);
-    G.drawBG(G.buffer, G.camera.xView, G.camera.yView);
+    //G.drawBG(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMap(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMobs(G.buffer, G.camera.xView, G.camera.yView);
     G.player.draw(G.buffer, G.camera.xView, G.camera.yView);
@@ -199,14 +217,36 @@ G.loop = function() {
 
     G.render(G.bufferCanvas); //draw buffer to full-size with scaling
     
+    if (G.Key.justReleased(G.Key.p)){
+    G.paused = !G.paused;
+    }
     
+    G.Key.update();
+    
+    G.stats.end();
+    
+    requestAnimationFrame(G.loop);
 
 };
 
+
+
 setInterval(function(){
-        G.const.E_HUNGER-=5;
-        console.log(G.const.E_HUNGER);
-    },1000);
+
+    G.const.E_HUNGER-=5;
+        //G.mobMouth = !G.mobMouth;
+        //console.log(G.const.E_HUNGER);
+
+},1000);
+
+setInterval(function(){
+
+        G.mobMouth = !G.mobMouth;
+
+},G.const.E_HUNGER*.9);
+    
+
+
 
 window.addEventListener('keyup', function(event) {
     G.Key.onKeyup(event);
@@ -214,6 +254,12 @@ window.addEventListener('keyup', function(event) {
 window.addEventListener('keydown', function(event) {
     G.Key.onKeydown(event);
 }, false);
+window.addEventListener('focus'), function(event) {
+    if(G.paused)G.paused = false;
+}
+window.addEventListener('blur'), function(event) {
+    G.paused = true;
+}
 //window.addEventListener('resize', G.resizeGame());
 
 window.onload = G.init;

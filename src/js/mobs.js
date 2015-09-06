@@ -1,10 +1,12 @@
 G.mobs=[];
+G.mobMouth = true;
 G.makeMobs = (function(){
     for(var i = 0; i <= 100; i++){
     var mob = new G.Entity();
-    mob.radius = 5;
+    mob.radius = G.const.E_SIZE /2;
     mob.width = 8;
     mob.height = 8;
+    mob.angle = 0;
     mob.eatCount = G.const.E_HUNGER;
     mob.frictY = G.const.E_FRICTY;
     mob.frictX = G.const.E_FRICTX;
@@ -17,17 +19,35 @@ G.makeMobs = (function(){
 
 G.drawMobs = function(ctx, xView, yView){
     G.mobs.forEach(function(e){
-        ctx.beginPath();
-        ctx.arc(e.xx-e.radius-xView, e.yy-e.radius-yView, e.radius, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'blue';
-        ctx.fill();
+        if(!this.dead){
+            e.angle = Math.atan2(e.ddy,e.ddx) + Math.PI;
+            if(e.angle < 0)e.angle += 2*Math.PI;
+            var start = e.angle + (0.2 + Math.PI);
+            var end = start - (G.mobMouth ? 1.2 : .1);
+            ctx.beginPath();
+            ctx.moveTo(e.xx-e.radius-xView, e.yy-e.radius-yView);
+            ctx.arc(e.xx-e.radius-xView, e.yy-e.radius-yView, e.radius, start, end, false);
+            ctx.closePath();
+            ctx.fillStyle = 'yellow';
+            ctx.fill();
+        }
+        
     });
 };
 
+G.drawAsplode = function(ctx, x, y, xView, yView){
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.arc(x-xView,y-yView,40,0,2*Math.PI,false);
+    ctx.closePath();
+    ctx.fillStyle = 'white';
+    ctx.fill();
+}
+
 G.mobRandomMove = function(e){
             if(Math.random() < .1){
-            e.dx += ((Math.random() * 2) -1) * .05;
-            e.dy += ((Math.random() * 2) -1) * .05;
+            e.dx += ((Math.random() * 2) -1) * .01;
+            e.dy += ((Math.random() * 2) -1) * .01;
         }
 };
 
@@ -81,10 +101,31 @@ G.mobEatMap = function(e) {
     
 }
 
+G.mobMoveToPlayer = function(e) {
+    e.angle = Math.atan2(e.yy - G.player.yy, e.xx - G.player.xx) + Math.PI;
+    if(e.angle < 0)e.angle += 2*Math.PI;
+    e.dx += Math.cos(e.angle)/2000;
+    e.dy += Math.sin(e.angle)/2000;
+}
+G.mobMoveAwayFromPlayer = function(e) {
+    e.angle = Math.atan2(e.yy - G.player.yy, e.xx - G.player.xx);
+    if(e.angle < 0)e.angle += 2*Math.PI;
+    e.dx += Math.cos(e.angle)/3000;
+    e.dy += Math.sin(e.angle)/3000;
+}
+
 G.mobUpdate = function(){
     G.mobs.forEach(function(e, i, a){
         e.update();
-        G.mobRandomMove(e);
+        if(G.player.flipped){
+            G.mobMoveToPlayer(e);
+            G.mobRandomMove(e);
+        }
+        else {
+            G.mobMoveAwayFromPlayer(e);
+            
+            G.mobRandomMove(e);
+        }
         G.mobEatMap(e);
         
     });

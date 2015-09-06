@@ -10,12 +10,28 @@ G.Entity = function(){
     this.dx = 0;
     this.dy = 0;
     
+    this.ddx = 0; //difference between last frame and this frame
+    this.ddy = 0;
+    
+    this.ox = 0; //previous frame x
+    this.oy = 0; //previous frame y
+    
     this.radius = 0;
     this.gravity = 0;
     
     this.frictX = 0.92;
     this.frictY = 0.94;
+    this.dead = false;
+    
+    this.id = Math.random();
+    
 };
+
+G.Entity.prototype.die = function(e) {
+    this.dead = true;
+    G.drawAsplode(G.buffer, e.xx, e.yy, G.camera.xView, G.camera.yView);
+    this.setCoords(-100,-100);
+}
 
 G.Entity.prototype.setCoords = function(x,y) {
         this.xx = x;
@@ -65,86 +81,100 @@ G.Entity.prototype.onCeiling = function() {
     
 G.Entity.prototype.update = function() {
     
-    var gravity = this.gravity;
-     
-    
-    //X component
-    this.xr += this.dx;
-    this.dx *= this.frictX;
-    if( this.hasCollision(this.cx-1, this.cy) && this.xr <= 0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
-        this.dx = 0;
-        this.xr = 0.3;
-    }
-    if( this.hasCollision(this.cx+1, this.cy) && this.xr >= 0.7 ) { // ditto right
-        this.dx = 0;
-        this.xr = 0.7;
-    }
-    while(this.xr < 0) { //update the cell and fractional movement
-        this.cx--;
-        this.xr++;
-    }
-    while(this.xr > 1) { //update the cell and fractional movement
-        this.cx++;
-        this.xr--;
-    }
-    
-    //Y component
-    this.dy += gravity;
-    this.yr += this.dy;
-    this.dy *= this.frictY;
-    if( this.hasCollision(this.cx, this.cy-1) && this.yr <= 0.4 ) { // if there's something above...
-        this.dy = 0;
-        this.yr = 0.4;
-    }
-    if( this.hasCollision(this.cx, this.cy+1) && this.yr >= 0.6 ) { // ditto below
-        this.dy = 0;
-        this.yr = 0.6;
-    }
-    while(this.yr < 0) { //update the cell and fractional movement up
-        this.cy--;
-        this.yr++;
-    }
-    while(this.yr > 1) { //update the cell and fractional movement down
-        this.cy++;
-        this.yr--;
-    }
-    
-    //object collision handling--------------------
-    
-    //sa('all contains ' + G.ALL.length)
-    
-    for(var i = 0; i < G.ALL.length; i++) {
-        //console.log('in collision check loop');
-        var e = G.ALL[i];
-        if(e != this && Math.abs(this.cx-e.cx) <= 1 && Math.abs(this.cy-e.cy) <= 1 ){
-           // console.log('initial cell check...');
-            var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
-            if(dist <= this.radius + e.radius) {
-                //console.log('touching');
-                var ang = Math.atan2(e.yy-this.yy, e.xx-this.xx);
-                var force = 0.03;
-                var repelPower = (this.radius + e.radius - dist) / (this.radius + e.radius);
-                this.dx -= Math.cos(ang) * repelPower * force;
-                this.dy -= Math.sin(ang) * repelPower * force;
-                e.dx += Math.cos(ang) * repelPower * force;
-                e.dy += Math.sin(ang) * repelPower * force;
-            }
+    if(!this.dead){
+        
+        var gravity = this.gravity;
+         
+        
+        //X component
+        this.xr += this.dx;
+        this.dx *= this.frictX;
+        if( this.hasCollision(this.cx-1, this.cy) && this.xr <= 0.3 ) { // if there's something to the left AND we're near the left edge of the current cell
+            this.dx = 0;
+            this.xr = 0.3;
         }
-       // else //console.log('no collision detected');
+        if( this.hasCollision(this.cx+1, this.cy) && this.xr >= 0.7 ) { // ditto right
+            this.dx = 0;
+            this.xr = 0.7;
+        }
+        while(this.xr < 0) { //update the cell and fractional movement
+            this.cx--;
+            this.xr++;
+        }
+        while(this.xr > 1) { //update the cell and fractional movement
+            this.cx++;
+            this.xr--;
+        }
+        
+        //Y component
+        this.dy += gravity;
+        this.yr += this.dy;
+        this.dy *= this.frictY;
+        if( this.hasCollision(this.cx, this.cy-1) && this.yr <= 0.4 ) { // if there's something above...
+            this.dy = 0;
+            this.yr = 0.4;
+        }
+        if( this.hasCollision(this.cx, this.cy+1) && this.yr >= 0.6 ) { // ditto below
+            this.dy = 0;
+            this.yr = 0.6;
+        }
+        while(this.yr < 0) { //update the cell and fractional movement up
+            this.cy--;
+            this.yr++;
+        }
+        while(this.yr > 1) { //update the cell and fractional movement down
+            this.cy++;
+            this.yr--;
+        }
+        
+        //object collision handling--------------------
+        
+        //sa('all contains ' + G.ALL.length)
+        
+        for(var i = 0; i < G.ALL.length; i++) {
+            //console.log('in collision check loop');
+            var e = G.ALL[i];
+            if(e != this && Math.abs(this.cx-e.cx) <= 1 && Math.abs(this.cy-e.cy) <= 1 ){
+               // console.log('initial cell check...');
+                var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
+                if(dist <= this.radius + e.radius) {
+                    if(this == G.player){
+                        e.die(e);
+                    }
+                    //console.log('touching');
+                    var ang = Math.atan2(e.yy-this.yy, e.xx-this.xx);
+                    var force = 0.03;
+                    var repelPower = (this.radius + e.radius - dist) / (this.radius + e.radius);
+                    this.dx -= Math.cos(ang) * repelPower * force;
+                    this.dy -= Math.sin(ang) * repelPower * force;
+                    e.dx += Math.cos(ang) * repelPower * force;
+                    e.dy += Math.sin(ang) * repelPower * force;
+                }
+            }
+           // else //console.log('no collision detected');
+        }
+        //----------------------------------------------
+        
+       
+       
+      
+        //update actual pixel coordinates:
+        
+       
+        this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);
+        this.yy = Math.floor((this.cy + this.yr)*G.const.GRID);
+        this.ddx = (this.cx + this.xr)*G.const.GRID - this.ox;
+        this.ddy = (this.cy + this.yr)*G.const.GRID - this.oy;
+        this.ox = (this.cx + this.xr)*G.const.GRID;
+        this.oy = (this.cy + this.yr)*G.const.GRID;
+        
+        //vertical screen wrap: 
+        
+        if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
+        
+            
     }
-    //----------------------------------------------
     
-   
-   
-  
-    //update actual pixel coordinates:
-    
-    this.xx = Math.floor((this.cx + this.xr)*G.const.GRID);
-    this.yy = Math.floor((this.cy + this.yr)*G.const.GRID);
-    
-    //vertical screen wrap: 
-    
-    if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
     
 };
     

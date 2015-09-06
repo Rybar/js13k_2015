@@ -15,6 +15,7 @@ G.Key = {
     z: 90,
     x: 88,
     f: 70,
+    p: 80,
     
     isDown: function(keyCode) {
         return this._pressed[keyCode];
