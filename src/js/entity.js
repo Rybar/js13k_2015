@@ -1,3 +1,4 @@
+/*global G */
 G.Entity = function(){
     this.cx = 0;
     this.cy = 0;
@@ -22,6 +23,7 @@ G.Entity = function(){
     this.frictX = 0.92;
     this.frictY = 0.94;
     this.dead = false;
+    this.collides = 1;
     
     this.id = Math.random();
     
@@ -43,18 +45,33 @@ G.Entity.prototype.setCoords = function(x,y) {
     };
 
 G.Entity.prototype.hasCollision = function(cx,cy) {
+    if(this.dead)return false;
     if(this == G.player){
-        if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
+        if( (this.cx<1 && this.xr < .5) || this.cx>=G.const.WIDTH)
             return true;
+        else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
+            return true;
+        }
         else if( (G.player.map[cy]) == undefined) {
             return true;
         }
         else return (G.player.map[cy][cx]);
         
     }
-    else {
-        if( (this.cx<1 && this.xr < .5) || cx>=G.const.WIDTH)
+    else if(this.isBullet) {
+         if( (this.cx<1 && this.xr < .5) || this.cx>=G.const.WIDTH)
             return true;
+        else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
+            return true;
+        }
+        else return (G.player.flipped ? G.player.map[cy][cx] : G.Map[cy][cx]) ;
+    }
+    else {
+        if( (this.cx<1 && this.xr < .5) || this.cx>=G.const.WIDTH)
+            return true;
+        else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
+            return true;
+        }
         else if( (G.Map[cy]) == undefined) {
             return false;
         }
@@ -82,6 +99,7 @@ G.Entity.prototype.onCeiling = function() {
 G.Entity.prototype.update = function() {
     
     if(!this.dead){
+        
         
         var gravity = this.gravity;
          
@@ -134,7 +152,9 @@ G.Entity.prototype.update = function() {
         for(var i = 0; i < G.ALL.length; i++) {
             //console.log('in collision check loop');
             var e = G.ALL[i];
-            if(e != this && Math.abs(this.cx-e.cx) <= 1 && Math.abs(this.cy-e.cy) <= 1 ){
+            if(!e.dead){
+                if(e.collides){
+                if(e != this && Math.abs(this.cx-e.cx) <= 1 && Math.abs(this.cy-e.cy) <= 1 ){
                // console.log('initial cell check...');
                 var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
                 if(dist <= this.radius + e.radius) {
@@ -151,6 +171,11 @@ G.Entity.prototype.update = function() {
                     e.dy += Math.sin(ang) * repelPower * force;
                 }
             }
+            
+            }
+                
+            }
+            
            // else //console.log('no collision detected');
         }
         //----------------------------------------------
@@ -170,7 +195,7 @@ G.Entity.prototype.update = function() {
         
         //vertical screen wrap: 
         
-        if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
+        //if(this.yy > (G.const.GRID * G.const.HEIGHT) + this.radius) this.setCoords(this.xx, -this.radius);
         
             
     }

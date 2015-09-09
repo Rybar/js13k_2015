@@ -1,3 +1,4 @@
+/*global G */
 G.audio = {
     JUMP: {
     "osc1_oct": 7,

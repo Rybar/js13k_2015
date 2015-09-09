@@ -1,6 +1,7 @@
+/*global G */
 G.mobs=[];
 G.mobMouth = true;
-G.makeMobs = (function(){
+(function(){
     for(var i = 0; i <= 100; i++){
     var mob = new G.Entity();
     mob.radius = G.const.E_SIZE /2;
@@ -64,7 +65,7 @@ G.mobEatMap = function(e) {
             }
         }
         if( e.hasCollision(e.cx, e.cy+1) && e.yr >= 0.6 ) { // ditto below
-            if(G.Map[e.cy-1] != undefined && G.Map[e.cy-1][e.cx] != undefined){
+            if(G.Map[e.cy+1] != undefined && G.Map[e.cy+1][e.cx] != undefined){
                 e.eatCount -= 1;
                 if(e.eatCount <= 0){
                     G.Map[e.cy+1][e.cx] = 0;
@@ -122,8 +123,8 @@ G.mobUpdate = function(){
             G.mobRandomMove(e);
         }
         else {
-            G.mobMoveAwayFromPlayer(e);
-            
+            //G.mobMoveAwayFromPlayer(e);
+            G.mobMoveToPlayer(e);
             G.mobRandomMove(e);
         }
         G.mobEatMap(e);

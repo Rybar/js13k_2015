@@ -109,8 +109,13 @@ G.drawMap = function(ctx, xView, yView) {
             //if(G.Map[i][j] < 0){G.Map[i][j] = 0} //hacky update bit to prevent negative cell health
             if (G.Map[i][j]) {
                 //ctx.lineWidth = 0.5;
+                var gs = .95;
+                var ax = (xView-xView*gs);
+                var ay = (yView-yView*gs);
                 ctx.strokeStyle = '#202020';
                 ctx.strokeRect((j * G.const.GRID) - xView, (i * G.const.GRID) - yView, G.const.GRID, G.const.GRID);
+                //ctx.strokeRect(((j * G.const.GRID*gs) - xView*gs)+ax, ((i * G.const.GRID*gs) - yView*gs)+ay, G.const.GRID*gs, G.const.GRID*gs);
+
                 
                 if(i > 0 && i < G.Map.length-1){ 
                     if (G.Map[i - 1][j] == 0) {

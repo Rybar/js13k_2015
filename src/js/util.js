@@ -1,3 +1,5 @@
+/*global G */
+//Rectangle
 (function(){
 		function Rectangle(left, top, width, height){
 			this.left = left || 0;
@@ -34,7 +36,8 @@
 		// add "class" Rectangle to our Game object
 		G.Rectangle = Rectangle;
 })();
-	
+
+//Camera	
 (function(){
 	
 		// possibles axis to move the camera
@@ -141,6 +144,7 @@ navigator.sayswho= (function(){
     return M;
 })();
  
+//browser check helper
 (function() {var browser;
 if (navigator.sayswho[0] == "Firefox")
 	browser="f";
@@ -155,4 +159,6 @@ else
 	
 G.browser = browser;
 })();
+
+
 

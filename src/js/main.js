@@ -1,4 +1,7 @@
-var G = window.G || {};
+/*global G */
+/*global Stats */
+/*global requestAnimationFrame */
+
 G.stats = new Stats();
 G.stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
 
@@ -20,17 +23,17 @@ G.init = function(){
     G.paused = false;
     //G.ALL.push(G.enemy);
     G.bufferCanvas = document.createElement('canvas');
-    G.bufferCanvas.width = 800;
-    G.bufferCanvas.height = 600;
+    G.bufferCanvas.width = G.const.VIEW_X;
+    G.bufferCanvas.height = G.const.VIEW_Y;
     G.buffer = G.bufferCanvas.getContext('2d');
     G.buffer.webkitImageSmoothingEnabled = false;
     G.buffer.mozImageSmoothingEnabled = false;
     G.buffer.imageSmoothingEnabled = false;
     
-    G.scrollFactor = 0.99;
+    G.scrollFactor = 0.94;
     
     G.camera = new G.Camera(0, 0, G.bufferCanvas.width, G.bufferCanvas.height, G.const.WIDTH * G.const.GRID, G.const.HEIGHT * G.const.GRID);
-    G.camera.follow(G.player, 100, 100);
+    G.camera.follow(G.player, 300, 300);
     
    
     
@@ -127,38 +130,39 @@ G.drawBG = function(ctx, xView, yView) {
     }
 };
 
+
 G.render = function(canvas) {
-    G.ctx.fillStyle = 'black';
-    G.ctx.fillRect(0, 0, 1200, 864);
-    G.ctx.drawImage(canvas, 0, 0, 800, 600, 0, 0, 800, 600);
+    G.ctx.drawImage(canvas, 0, 0, G.const.VIEW_X, G.const.VIEW_Y, 0, 0, G.const.VIEW_X, G.const.VIEW_Y);
 
     //console.log(G.camera.xView + ", " + G.camera.yView);
 
 }
 
 G.resizeGame = function() {
-    var gameArea = document.querySelector('#gamecontainer');
-    var widthToHeight = 16 / 9;
+    //var gameArea = document.querySelector('#gamecontainer');
+    //var widthToHeight = 16 / 9;
     var newWidth = window.innerWidth;
     var newHeight = window.innerHeight;
-    var newWidthToHeight = newWidth / newHeight;
+    // var newWidthToHeight = newWidth / newHeight;
     
-    if (newWidthToHeight > widthToHeight) {
-        newWidth = newHeight * widthToHeight;
-        gameArea.style.height = newHeight + 'px';
-        gameArea.style.width = newWidth + 'px';
-    } else {
-        newHeight = newWidth / widthToHeight;
-        gameArea.style.width = newWidth + 'px';
-        gameArea.style.height = newHeight + 'px';
-    }
+    // if (newWidthToHeight > widthToHeight) {
+    //     newWidth = newHeight * widthToHeight;
+    //     gameArea.style.height = newHeight + 'px';
+    //     gameArea.style.width = newWidth + 'px';
+    // } else {
+    //     newHeight = newWidth / widthToHeight;
+    //     gameArea.style.width = newWidth + 'px';
+    //     gameArea.style.height = newHeight + 'px';
+    // }
     
-    gameArea.style.marginTop = (-newHeight / 2) + 'px';
-    gameArea.style.marginLeft = (-newWidth / 2) + 'px';
+    //gameArea.style.marginTop = (-newHeight / 2) + 'px';
+    //gameArea.style.marginLeft = (-newWidth / 2) + 'px';
     
     var gameCanvas = document.querySelector('#game');
-    gameCanvas.width = newWidth;
-    gameCanvas.height = newHeight;
+    G.const.VIEW_X = newWidth-60;
+    G.const.VIEW_Y = newHeight-60;
+    gameCanvas.width = newWidth-60;
+    gameCanvas.height = newHeight-60;
 }
 
 G.loadingScreen = function(){
@@ -189,30 +193,28 @@ G.loop = function() {
         
     //----------------UPDATE-------------------
     G.mobUpdate();
+    G.particlesUpdate();
     G.Map = G.Map;
     G.player.map = G.player.map;
     
     G.player.inputUpdate();
     G.player.update();
+    
     G.camera.update();        
     // G.enemy.update();
     //console.log(G.player.xx + ' ' + G.player.yy + ' ' );
     //--------------END UPDATE-----------------
-        
     }
-
-    
-
-   
 
     //--------------RENDER---------------------
     
-    G.buffer.fillStyle = 'rgba(0,0,0,.5)'; //screen blank
-    G.buffer.fillRect(0, 0, 800, 600);
+    G.buffer.fillStyle = 'rgba(0,0,0,.7)'; //screen blank
+    G.buffer.fillRect(0, 0, G.const.VIEW_X, G.const.VIEW_Y);
     //G.drawBG(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMap(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMobs(G.buffer, G.camera.xView, G.camera.yView);
     G.player.draw(G.buffer, G.camera.xView, G.camera.yView);
+    G.drawParticles(G.buffer, G.camera.xView, G.camera.yView);
     //G.enemy.draw(G.buffer, G.camera.xView, G.camera.yView);
 
     G.render(G.bufferCanvas); //draw buffer to full-size with scaling
@@ -260,6 +262,6 @@ window.addEventListener('focus'), function(event) {
 window.addEventListener('blur'), function(event) {
     G.paused = true;
 }
-//window.addEventListener('resize', G.resizeGame());
+window.addEventListener('resize', G.resizeGame());
 
 window.onload = G.init;
