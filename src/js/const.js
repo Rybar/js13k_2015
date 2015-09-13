@@ -3,11 +3,11 @@ G.ALL = []; //to store all collidable entities in the game
 G.PARTICLES = [];
 
 G.const={
-    GRID: 30,
-    WIDTH: 100,
-    HEIGHT: 60,
-    VIEW_X: 1280,
-    VIEW_Y: 720,
+    GRID: 24,
+    WIDTH: 50,
+    HEIGHT: 40,
+    VIEW_X: 800,
+    VIEW_Y: 600,
     
     P_SIZE: 16,
     P_SPEED: 0.03,
@@ -21,13 +21,13 @@ G.const={
     
     
     E_SIZE: 16,
-    E_SPEED: 0.03,
-    E_SPACESPEED: 0.01,
+    E_SPEED: 0.02,
+    E_SPACESPEED: 0.007,
     E_THRUST: 0.003,
     E_FRICTX: 1,
     E_FRICTY: 1,
     E_SPACEFRICT: 1,
     E_GRAVITY: 0.00,
     E_JUMP: 0.5,
-    E_HUNGER: 500
+    E_HUNGER: 800
 };

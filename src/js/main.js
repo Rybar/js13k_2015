@@ -9,18 +9,25 @@ G.stats.setMode( 0 ); // 0: fps, 1: ms, 2: mb
 G.stats.domElement.style.position = 'absolute';
 G.stats.domElement.style.left = '0px';
 G.stats.domElement.style.top = '0px';
+
     document.body.appendChild( G.stats.domElement );
 
 G.canvas = document.querySelector('#game');
 G.ctx = G.canvas.getContext('2d');
-G.ctx.webkitImageSmoothingEnabled = false;
-G.ctx.mozImageSmowothingEnabled = false;
-G.ctx.imageSmoothingEnabled = false;
 
 G.init = function(){
     
+    G.ALL=[];
+    G.mobs=[];
+    G.camera = {};
+    G.Map = [];
+    G.player.map = [];
+    
+    G.player.setCoords( Math.floor(G.const.WIDTH/2)*G.const.GRID , Math.floor(G.const.HEIGHT/2)*G.const.GRID );
+    
     G.ALL.push(G.player);  //push player to ALL for collisions
     G.paused = false;
+    G.gameOver = false;
     //G.ALL.push(G.enemy);
     G.bufferCanvas = document.createElement('canvas');
     G.bufferCanvas.width = G.const.VIEW_X;
@@ -34,6 +41,8 @@ G.init = function(){
     
     G.camera = new G.Camera(0, 0, G.bufferCanvas.width, G.bufferCanvas.height, G.const.WIDTH * G.const.GRID, G.const.HEIGHT * G.const.GRID);
     G.camera.follow(G.player, 300, 300);
+    
+    
     
    
     
@@ -55,10 +64,14 @@ G.init = function(){
     G.player.map = G.Map.map(function(arr) { //copy of map for player for flip interaction, since rendering depends on G.Map
         return arr.slice();
     });
-
-    G.initAudio();
     
-    G.loadingScreen();
+//make the mobs. must be After Map.
+
+G.makeMobs(100);
+
+if(!G.sounds)G.initAudio();
+
+G.loadingScreen();
 };
 //---------END init;
 
@@ -171,25 +184,51 @@ G.loadingScreen = function(){
         G.ctx.fillStyle = 'black'; //screen blank
         G.ctx.fillRect(0, 0, 800, 600);
         G.ctx.fillStyle = 'white';
-        G.ctx.font = "48px serif";
+        G.ctx.font = "48px monospace";
         G.ctx.fillText("Loading... "+G.sounds.loaded, 10, 50);
     }
-    else{
-         //G.playSound(G.sounds.gameSong, true);
-         G.jetloop = G.playSound(G.sounds.jet, true);
-         G.jetloop.sound.loopEnd = 0.3;
-         G.jetloop.volume.gain.value = 0;
-         //G.jetloop.gainNode.value = 0;
-         G.loop();
+    else if(!G.startGame) {//title screen!
+        requestAnimationFrame(G.loadingScreen);
+        G.ctx.fillStyle = 'black'; //screen blank
+        G.ctx.fillRect(0, 0, 800, 600);
+        G.ctx.fillStyle = 'white';
+        G.ctx.font = "12px monospace";
+        G.ctx.fillText("z to flip across wall, x to shoot, space to jump. Arrows. Press X to begin", 10, 50);
+        G.Key.update();
+        
+        if(G.Key.isDown(G.Key.x)){
+            console.log('x pressed');
+            G.startGame = true;
+        }
+        
+        //  //G.playSound(G.sounds.gameSong, true);
+        //  G.jetloop = G.playSound(G.sounds.jet, true);
+        //  G.jetloop.sound.loopEnd = 0.3;
+        //  G.jetloop.volume.gain.value = 0;
+        //  //G.jetloop.gainNode.value = 0;
+        //  G.loop();
     }
+    
+    else if(G.startGame){
+        G.jetloop = G.playSound(G.sounds.jet, true);
+        G.jetloop.sound.loopEnd = 0.3;
+        G.jetloop.volume.gain.value = 0;
+        G.gameLoop = window.requestAnimationFrame(G.loop, G.bufferCanvas);
+    }
+   
+    
+    
     
 };
 
 G.loop = function() {
     
+    if(!G.gameOver){
+        
+    
     G.stats.begin();
     
-    if(!G.paused){
+    if(!G.paused && G.gameLoop){
         
     //----------------UPDATE-------------------
     G.mobUpdate();
@@ -210,7 +249,7 @@ G.loop = function() {
     
     G.buffer.fillStyle = 'rgba(0,0,0,.7)'; //screen blank
     G.buffer.fillRect(0, 0, G.const.VIEW_X, G.const.VIEW_Y);
-    //G.drawBG(G.buffer, G.camera.xView, G.camera.yView);
+    G.drawBG(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMap(G.buffer, G.camera.xView, G.camera.yView);
     G.drawMobs(G.buffer, G.camera.xView, G.camera.yView);
     G.player.draw(G.buffer, G.camera.xView, G.camera.yView);
@@ -227,8 +266,26 @@ G.loop = function() {
     
     G.stats.end();
     
+    G.gameOver = G.checkMap(G.Map);
+    
     requestAnimationFrame(G.loop);
 
+    }
+    else {
+        G.ctx.fillStyle = 'black'; //screen blank
+        G.ctx.fillRect(0, 0, 800, 600);
+        G.ctx.fillStyle = 'white';
+        G.ctx.font = "36px monospace";
+        G.ctx.fillText("Game Over. Press x to play again ", 10, 50);
+        if(G.Key.isDown(G.Key.x)){
+        G.jetloop.volume.gain.value = 0;
+        window.cancelAnimationFrame(G.loop);
+        G.gameLoop = undefined;
+        G.init();
+        }      
+        G.Key.update();
+        requestAnimationFrame(G.loop);
+    }
 };
 
 
@@ -245,7 +302,11 @@ setInterval(function(){
 
         G.mobMouth = !G.mobMouth;
 
-},G.const.E_HUNGER*.9);
+},500);
+
+setInterval(function(){
+    console.log(G.checkMap(G.Map));
+}, 1000);
     
 
 
@@ -262,6 +323,6 @@ window.addEventListener('focus'), function(event) {
 window.addEventListener('blur'), function(event) {
     G.paused = true;
 }
-window.addEventListener('resize', G.resizeGame());
+//window.addEventListener('resize', G.resizeGame());
 
 window.onload = G.init;

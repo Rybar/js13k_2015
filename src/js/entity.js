@@ -24,15 +24,19 @@ G.Entity = function(){
     this.frictY = 0.94;
     this.dead = false;
     this.collides = 1;
+    this.isBullet = false;
     
     this.id = Math.random();
     
 };
 
 G.Entity.prototype.die = function(e) {
-    this.dead = true;
+    e.dead = true;
     G.drawAsplode(G.buffer, e.xx, e.yy, G.camera.xView, G.camera.yView);
-    this.setCoords(-100,-100);
+    e.xx = -100;
+    e.yy = -100;
+    G.ALL.splice(G.ALL.indexOf(e), 1);
+    //G.mobs.splice(G.mobs.indexOf(e), 1);
 }
 
 G.Entity.prototype.setCoords = function(x,y) {
@@ -52,7 +56,7 @@ G.Entity.prototype.hasCollision = function(cx,cy) {
         else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
             return true;
         }
-        else if( (G.player.map[cy]) == undefined) {
+        else if( G.player.map[cy] == undefined || G.player.map[cy][cx] == undefined ) {
             return true;
         }
         else return (G.player.map[cy][cx]);
@@ -64,6 +68,9 @@ G.Entity.prototype.hasCollision = function(cx,cy) {
         else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
             return true;
         }
+        else if( G.player.map[cy] == undefined || G.player.map[cy][cx] == undefined ) {
+            return true;
+        }
         else return (G.player.flipped ? G.player.map[cy][cx] : G.Map[cy][cx]) ;
     }
     else {
@@ -72,8 +79,8 @@ G.Entity.prototype.hasCollision = function(cx,cy) {
         else if(this.cy<1 && this.yr < .5 || this.cy>=G.const.HEIGHT ){
             return true;
         }
-        else if( (G.Map[cy]) == undefined) {
-            return false;
+        else if( (G.Map[cy]) == undefined  || G.Map[cy][cx] == undefined ) {
+            return true;
         }
         else return (G.Map[cy][cx]);
     }
@@ -95,6 +102,13 @@ G.Entity.prototype.onGround = function() {
 G.Entity.prototype.onCeiling = function() {
     return this.hasCollision(this.cx, this.cy-1) && this.yr<=0.5;
 };
+
+G.Entity.prototype.onWallLeft = function() {
+    return this.hasCollision(this.cx-1, this.cy) && this.xr<=0.5;
+}
+G.Entity.prototype.onWallRight = function() {
+    return this.hasCollision(this.cx+1, this.cy) && this.xr>=0.5;
+}
     
 G.Entity.prototype.update = function() {
     
@@ -132,9 +146,9 @@ G.Entity.prototype.update = function() {
             this.dy = 0;
             this.yr = 0.4;
         }
-        if( this.hasCollision(this.cx, this.cy+1) && this.yr >= 0.6 ) { // ditto below
+        if( this.hasCollision(this.cx, this.cy+1) && this.yr >= 0.7 ) { // ditto below
             this.dy = 0;
-            this.yr = 0.6;
+            this.yr = 0.7;
         }
         while(this.yr < 0) { //update the cell and fractional movement up
             this.cy--;
@@ -158,8 +172,9 @@ G.Entity.prototype.update = function() {
                // console.log('initial cell check...');
                 var dist = Math.sqrt( (e.xx-this.xx) * (e.xx-this.xx) + (e.yy-this.yy)*(e.yy-this.yy) );
                 if(dist <= this.radius + e.radius) {
-                    if(this == G.player){
-                        e.die(e);
+                    
+                    if(this == G.player){ //enemies die when touch player
+                        G.Entity.prototype.die(e);
                     }
                     //console.log('touching');
                     var ang = Math.atan2(e.yy-this.yy, e.xx-this.xx);

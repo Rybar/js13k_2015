@@ -1,8 +1,9 @@
 /*global G */
 G.mobs=[];
 G.mobMouth = true;
-(function(){
-    for(var i = 0; i <= 100; i++){
+
+G.makeMobs = function(amount){
+    for(var i = 0; i <= amount; i++){
     var mob = new G.Entity();
     mob.radius = G.const.E_SIZE /2;
     mob.width = 8;
@@ -12,11 +13,14 @@ G.mobMouth = true;
     mob.frictY = G.const.E_FRICTY;
     mob.frictX = G.const.E_FRICTX;
     mob.gravity = G.const.E_GRAVITY;
-    mob.setCoords((Math.random()*1200)+32, Math.random()*800);
+    mob.setCoords((Math.random()*G.const.GRID*(G.const.WIDTH-1)), Math.random()*G.const.GRID*(G.const.HEIGHT-1));
+    while(G.Map[mob.cy][mob.cx]){
+        mob.setCoords((Math.random()*G.const.GRID*(G.const.WIDTH-1)), Math.random()*G.const.GRID*(G.const.HEIGHT-1));
+    }
     G.mobs.push(mob);
     G.ALL.push(mob);
     }
-})();
+};
 
 G.drawMobs = function(ctx, xView, yView){
     G.mobs.forEach(function(e){
@@ -26,8 +30,8 @@ G.drawMobs = function(ctx, xView, yView){
             var start = e.angle + (0.2 + Math.PI);
             var end = start - (G.mobMouth ? 1.2 : .1);
             ctx.beginPath();
-            ctx.moveTo(e.xx-e.radius-xView, e.yy-e.radius-yView);
-            ctx.arc(e.xx-e.radius-xView, e.yy-e.radius-yView, e.radius, start, end, false);
+            ctx.moveTo(e.xx-xView, e.yy-yView);
+            ctx.arc(e.xx-xView, e.yy-yView, e.radius, start, end, false);
             ctx.closePath();
             ctx.fillStyle = 'yellow';
             ctx.fill();
@@ -107,7 +111,7 @@ G.mobMoveToPlayer = function(e) {
     if(e.angle < 0)e.angle += 2*Math.PI;
     e.dx += Math.cos(e.angle)/2000;
     e.dy += Math.sin(e.angle)/2000;
-}
+};
 G.mobMoveAwayFromPlayer = function(e) {
     e.angle = Math.atan2(e.yy - G.player.yy, e.xx - G.player.xx);
     if(e.angle < 0)e.angle += 2*Math.PI;
@@ -127,7 +131,15 @@ G.mobUpdate = function(){
             G.mobMoveToPlayer(e);
             G.mobRandomMove(e);
         }
+        
         G.mobEatMap(e);
+        
+        if(G.mobs.filter(function(e){return !e.dead}).length < 5){
+            G.makeMobs(10);
+        }
+        if(G.Map[e.cy] != undefined && G.Map[e.cy][e.cx]){
+            G.Entity.prototype.die(e);
+        }
         
     });
 };
